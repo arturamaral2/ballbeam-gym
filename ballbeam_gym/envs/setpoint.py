@@ -52,7 +52,7 @@ class BallBeamSetpointEnv(BallBeamBaseEnv):
             self.setpoint = np.random.random_sample()*beam_length - beam_length/2
             self.random_setpoint = True
         else:
-            if abs(setpoint) > beam_length/2:
+            if abs(setpoint) > beam_length:
                 raise ValueError('Setpoint outside of beam.')
             self.setpoint = setpoint
             self.random_setpoint = False
@@ -141,7 +141,7 @@ class VisualBallBeamSetpointEnv(VisualBallBeamBaseEnv):
             self.setpoint = np.random.random_sample()*beam_length - beam_length/2
             self.random_setpoint = True
         else:
-            if abs(setpoint) > beam_length/2:
+            if abs(setpoint) > beam_length:
                 raise ValueError('Setpoint outside of beam.')
             self.setpoint = setpoint
             self.random_setpoint = False

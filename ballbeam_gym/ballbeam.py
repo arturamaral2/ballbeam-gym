@@ -6,6 +6,7 @@ gym environments.
 """
 
 from math import sin, cos
+from re import L
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon, Circle
 
@@ -36,10 +37,11 @@ class BallBeam():
 
     def __init__(self, timestep=0.05, beam_length=1.0, max_angle=0.2, init_velocity=0.0):
         self.dt = timestep                  # time step
+        self.mb =  0.064                    # massa da bola
         self.g = 9.82                       # gravity
         self.r = 0.05                       # ball radius
         self.L = beam_length                # beam length
-        self.I = 2/5*self.r**2              # solid ball inertia (omits mass)
+        self.I = (2/5*self.r**2)*self.mb    # solid ball inertia 
         self.init_velocity = init_velocity  # initial velocity
         self.max_angle = max_angle          # max beam angle (rad)
         self.reset()
@@ -49,17 +51,17 @@ class BallBeam():
     def reset(self):
         radius = self.L/2                       # beam radius
         self.t = 0.0                            # time
-        self.x = 0.0                            # ball position x
+        self.x = radius                         # ball position x
         self.y = self.r                         # ball position y
         self.v = self.init_velocity             # ball velocity
         self.theta = 0.0                        # beam angle (rad)
         self.dtheta = 0.0                       # beam angle change (rad)
         self.v_x = 0.0                          # velocity x component
         self.v_y = 0.0                          # velocity y component
-        self.lim_x = [-cos(self.theta)*radius,  # geam limits x
-                       cos(self.theta)*radius] 
-        self.lim_y = [-sin(self.theta)*radius,  # beam limits y
-                       sin(self.theta)*radius] 
+        self.lim_x = [0,  # geam limits x
+                       cos(self.theta)*self.L] 
+        self.lim_y = [0,  # beam limits y
+                       sin(self.theta)*self.L] 
 
     def update(self, angle):
         """ 
@@ -99,8 +101,8 @@ class BallBeam():
             self.y += self.v_y*self.dt
         
         # edge of beam
-        self.lim_x = [-cos(self.theta)*radius, cos(self.theta)*radius]
-        self.lim_y = [-sin(self.theta)*radius, sin(self.theta)*radius]
+        self.lim_x = [0, cos(self.theta)*self.L]
+        self.lim_y = [0, sin(self.theta)*self.L]
         
         # update time
         self.t += self.dt
@@ -114,16 +116,16 @@ class BallBeam():
             plt.ion()
             fig, ax = plt.subplots(1, 1, figsize=(8, 4))
             fig.canvas.set_window_title('Beam & Ball')
-            ax.set(xlim = (-2*radius, 2*radius), ylim = (-self.L/2, self.L/2))
+            ax.set(xlim = (-2*radius, 2*self.L), ylim = (-self.L, self.L))
             
             # draw ball
             self.ball_plot = Circle((self.x, self.y), self.r)
             ax.add_patch(self.ball_plot)
-            ax.patches[0].set_color('red')
+            ax.patches[0].set_color('blue')
             # draw beam
-            ax.plot([-cos(self.theta)*radius, cos(self.theta)*radius], 
-                    [-sin(self.theta)*radius, sin(self.theta)*radius], lw=4, color='black')
-            ax.plot(0.0, 0.0, '.', ms=20)
+            ax.plot([0, cos(self.theta)*self.L] , 
+                    [0, sin(self.theta)*self.L], lw=4, color='brown')
+            ax.plot(0.0, 0.0, '.', ms=20, color='black')
 
             if setpoint is not None:
                 ax.add_patch(Polygon( \
